@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Launcher: runs usrp-sim with the project's virtualenv.
+HERE="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+PY="$HERE/.venv/bin/python"
+[ -x "$PY" ] || { echo "no virtualenv at $HERE/.venv -- run $HERE/setup.sh first" >&2; exit 1; }
+export PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}"
+exec "$PY" -m usrp_sim.cli "$@"

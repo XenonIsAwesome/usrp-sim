@@ -1,0 +1,33 @@
+# RX from a file and a UDP socket, TX to a file and a TCP peer; realistic delays, free-running off.
+[device]
+serial = "SIM0002"
+bind   = "127.0.0.2"          # one device per IP: 127.0.0.x all are loopback on Linux, no setup needed
+realtime = true
+
+[dboards]
+A = { id = "UBX-160", serial = "DBA001" }
+B = { id = "SBX",     serial = "DBB001" }
+
+[delays]
+time_scale = 1.0
+[delays.fixed_ms]
+lmk_reprogram = 150
+lo_retune     = { min = 10, max = 30 }     # uniform for just this event
+gain_change   = { mean = 2, std = 0.3 }    # normal for just this event
+
+[rx.0]                         # channel A:0
+source = "file"
+path   = "in_ch0.sc16"         # raw interleaved little-endian int16 I/Q (sc16)
+repeat = true
+
+[rx.1]                         # channel B:0
+source = "udp"
+listen = "127.0.0.1:5001"      # datagrams of raw sc16; a starved source is zero-filled and flagged as overrun
+
+[tx.0]
+sink = "file"
+path = "out_ch0.sc16"
+
+[tx.1]
+sink    = "tcp"
+connect = "127.0.0.1:5002"     # the sim connects (client); use listen = "..." to make it a server

@@ -1,0 +1,11 @@
+# Sweep values for tools/measure_delays.py (all keys optional; unset keys use the built-in defaults).
+# All ordered pairs A->B of each list are measured (limit with --max-pairs).
+rx_freq   = [500e6, 900e6, 1.0e9, 1.001e9, 2.4e9, 3.5e9, 5.8e9]   # Hz: near steps, far steps, band edges
+tx_freq   = [900e6, 1.0e9, 2.4e9, 5.8e9]
+gain      = [0.0, 10.0, 20.0, 31.5]                                # dB
+antenna_rx = ["TX/RX", "RX2"]
+antenna_tx = ["TX/RX", "CAL"]
+rate      = [1e6, 5e6, 10e6, 25e6, 50e6, 100e6]                    # samples/s (DDC/DUC)
+time_source  = ["internal", "external"]
+# clock_source = ["internal", "external"]   # needs a reference on real hardware: opt-in only
+master_clock_rate = [200e6, 184.32e6]     # device re-created for each ordered pair

@@ -1,0 +1,23 @@
+# Tier 2: generic device over the MPMD protocol (E3xx/AD9361-class radio, 1 or 2 channels).
+# Client:  uhd_usrp_probe --args mgmt_addr=127.0.0.1      (mgmt_addr = the [device] bind address)
+[device]
+profile = "custom"
+serial  = "MPM0001"
+name    = "sim-mpmd"
+bind    = "127.0.0.1"
+master_clock_rate = 61.44e6
+
+[custom]
+channels = 2                   # or rx_channels / tx_channels separately (1..2)
+
+[delays.fixed_ms]
+lo_retune = 20
+lmk_reprogram = 150            # applied on a master clock change (db_0_set_catalina_clock_rate)
+
+[rx.0]
+source = "tone"
+freq_hz = 100e3
+amplitude = 0.5
+[tx.0]
+sink = "file"
+path = "mpmd_tx0.sc16"

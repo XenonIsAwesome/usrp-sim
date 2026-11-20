@@ -1,0 +1,8 @@
+# Replay delays measured on a real device with tools/measure_delays.py
+[device]
+serial = "SIM0003"
+[delays]
+model = "table"
+table = "measured_example.csv"   # relative to this file
+default_ms = 0                    # events that are not in the table
+time_scale = 1.0

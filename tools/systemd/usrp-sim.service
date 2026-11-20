@@ -1,0 +1,37 @@
+[Unit]
+Description=usrp-sim - offline USRP simulator for stock UHD
+Documentation=file:@PREFIX@/README.md
+After=network.target
+
+[Service]
+Type=simple
+User=usrp-sim
+Group=usrp-sim
+ExecStart=@PREFIX@/.venv/bin/python -m usrp_sim.cli --config /etc/usrp-sim/sim.toml --stats-interval 60
+# SIGHUP reloads the [delays] section only; other changes need `systemctl restart usrp-sim`
+ExecReload=/bin/kill -HUP $MAINPID
+# SIGINT = the clean-shutdown path (sinks flushed, claim released, counters logged); SIGTERM works too
+KillSignal=SIGINT
+TimeoutStopSec=15
+Restart=on-failure
+RestartSec=2
+Environment=PYTHONPATH=@PREFIX@
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/var/lib/usrp-sim
+StateDirectory=usrp-sim
+# All ports are > 1024: no capabilities needed. Hardening:
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/usrp-sim
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_UNIX
+CapabilityBoundingSet=
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

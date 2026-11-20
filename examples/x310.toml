@@ -1,0 +1,61 @@
+# usrp-sim example configuration (X310, two UBX-160)
+[device]
+profile  = "x310"            # x310 | x300 | (tier 2) custom
+serial   = "SIM0001"
+name     = "sim-x310"
+# fw_compat   = "6.1"        # override to match the installed UHD (see --probe-compat)
+# fpga_compat = "39.0"
+bind     = "127.0.0.1"       # per-device IP; 127.0.0.2, .3 ... for more devices
+fpga     = "XG"              # HG | XG
+master_clock_rate = 200e6    # 200e6 | 184.32e6 | 120e6 (the host programs the LMK for it)
+realtime = true              # false = free-run streams as fast as possible
+state_dir = "./state"        # file-backed EEPROM etc.
+rx_overrun_on_underrun = true  # raise the RX overrun flag when a source starves
+claim_timeout_s = 1.5        # a claim not refreshed for this long expires
+tx_buffer_bytes = 262144     # TX ingress buffer advertised to the host (FPGA image: 65536); the
+                             # host can run this far ahead of the simulated sample clock
+
+[dboards]
+A = { id = "UBX-160", serial = "DBA001", rev = 1 }
+B = { id = "UBX-160", serial = "DBB001", rev = 1 }
+
+[time]
+source = "system"            # device time = system clock
+pps    = "system-second"     # PPS edges on system-second boundaries (or "none")
+initial_offset_s = 0.0
+
+[delays]
+time_scale = 1.0             # global multiplier (0 = no delays)
+model      = "fixed"         # fixed | uniform | normal | table | hook
+default_ms = 0
+# table    = "measured.csv"  # model = "table": output of tools/measure_delays.py
+# hook     = "mymod:myfunc"  # model = "hook": myfunc(event, old, new) -> seconds
+# jitter = 0.1               # uniform: +-fraction of the per-event value
+# std_fraction = 0.1         # normal: std = fraction * per-event value
+[delays.fixed_ms]            # numbers, or { min = 10, max = 30 } / { mean = 20, std = 3 }
+lmk_reprogram = 150
+lo_retune     = 20
+gain_change   = 1
+antenna       = 1
+dsp_rate      = 2
+stream_start  = 5
+dac_sync      = 80
+reg_access    = 0.0
+
+[rx.0]                       # channel "A:0" (index 0); "B:0" = 1, "A:1" = 2, "B:1" = 3
+source = "ramp"              # file | udp | tcp | unix | zeros | tone | noise | ramp
+# path   = "in_ch0.sc16"     # raw interleaved int16 I/Q
+format = "sc16"              # sc16 | fc32 (converted)
+repeat = true
+[rx.1]
+source = "zeros"
+# source = "udp"
+# listen = "127.0.0.1:5001"  # or connect = "..."; payload = raw sc16 stream
+
+[tx.0]
+sink = "null"                # file | udp | tcp | unix | null
+# path = "out_ch0.sc16"
+[tx.1]
+sink = "null"
+# sink    = "udp"
+# connect = "127.0.0.1:5002"
